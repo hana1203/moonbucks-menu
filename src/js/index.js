@@ -6,12 +6,7 @@ function App() {
 
   const $espressoMenuName = document.querySelector("#espresso-menu-name");
 
-  const addMenuName = () => {
-    //입력값 빈값이면 추가하지 않기
-    if ($espressoMenuName.value === "") {
-      alert("값을 입력해주세요");
-      return;
-    }
+  const menuTemplate = () => {
     //메뉴이름 input요소 바인딩
     document.querySelector("#espresso-menu-list").insertAdjacentHTML(
       "beforeend", //lastchild에 insert하기
@@ -32,6 +27,15 @@ function App() {
   </button>
 </li>`
     );
+  };
+
+  const addMenuName = () => {
+    //입력값 빈값이면 추가하지 않기
+    if ($espressoMenuName.value === "") {
+      alert("값을 입력해주세요");
+      return;
+    }
+    menuTemplate();
     updateMenuCount();
     $espressoMenuName.value = ""; //입력값 빈값으로 초기화
   };
@@ -42,6 +46,21 @@ function App() {
       .querySelector("#espresso-menu-list")
       .querySelectorAll("li").length; //length없이 li요소 찍으면 NodeList [li.menu-list-item.d-flex.items-center.py-2]
     document.querySelector(".menu-count").textContent = `총 ${menuCount}개`;
+  };
+
+  const updateMenuName = (e) => {
+    const $menuName = e.target.closest("li").querySelector(".menu-name");
+    let updatedMenuName = prompt(
+      "메뉴이름을 수정해주세요",
+      $menuName.textContent
+    );
+    $menuName.textContent = updatedMenuName;
+  };
+
+  const deleteMenuName = (e) => {
+    e.target.closest("li").remove();
+    //총 갯수도 줄이기
+    updateMenuCount();
   };
 
   //엔터 이벤트
@@ -76,21 +95,14 @@ function App() {
       if (e.target.classList.contains("menu-edit-button")) {
         //클릭한 요소의 클래스 배열중 menu-edit-button 클래스 있으면
         //가장가까운 li태그를 찾아서 li > span 태그 ('.menu-name')의 textContent 를 띄워주고 수정
-        const $menuName = e.target.closest("li").querySelector(".menu-name");
-        let updatedMenuName = prompt(
-          "메뉴이름을 수정해주세요",
-          $menuName.textContent
-        );
-        $menuName.textContent = updatedMenuName;
+        updateMenuName(e);
       }
 
       //삭제 이벤트
       if (e.target.classList.contains("menu-remove-button")) {
         if (confirm(`정말 삭제할까요?`)) {
           //확인누르면 true, 취소하면 false 리턴
-          e.target.closest("li").remove();
-          //총 갯수도 줄이기
-          updateMenuCount();
+          deleteMenuName(e);
         }
       }
     });
